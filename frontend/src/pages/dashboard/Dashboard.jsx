@@ -232,15 +232,22 @@ export default function Dashboard() {
           <div className="h-64">
             {purchaseChart && purchaseChart.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={purchaseChart}>
+                <BarChart data={purchaseChart} barCategoryGap="20%">
+                  <defs>
+                    <linearGradient id="purchaseGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#6366f1" stopOpacity={0.9} />
+                      <stop offset="100%" stopColor="#4f46e5" stopOpacity={0.7} />
+                    </linearGradient>
+                  </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="label" tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 12, fill: '#64748b' }} axisLine={false} tickLine={false} />
                   <Tooltip
                     formatter={(value) => [`₹${Number(value).toLocaleString()}`, 'Purchases']}
                     contentStyle={{ borderRadius: '12px', border: '1px solid #e2e8f0' }}
+                    cursor={{ fill: '#f8fafc' }}
                   />
-                  <Bar dataKey="totalAmount" fill="#0f172a" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="totalAmount" fill="url(#purchaseGrad)" radius={[8, 8, 0, 0]} maxBarSize={44} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

@@ -96,31 +96,28 @@ const getSalesChart = async (req, res) => {
         totalSales: { $sum: 1 }
       }
     },
-    { $sort: { '_id.year': 1, '_id.month': 1 } },
-    {
-      $project: {
-        _id: 0,
-        year: '$_id.year',
-        month: '$_id.month',
-        totalRevenue: 1,
-        totalSales: 1,
-        label: {
-          $concat: [
-            {
-              $arrayElemAt: [
-                ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                '$_id.month'
-              ]
-            },
-            ' ',
-            { $toString: '$_id.year' }
-          ]
-        }
-      }
-    }
+    { $sort: { '_id.year': 1, '_id.month': 1 } }
   ])
 
-  return successResponse(res, { salesChart: salesData }, 'Sales chart data fetched successfully')
+  // Build full 6-month continuous timeline
+  const monthNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const fullChart = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date()
+    d.setMonth(d.getMonth() - i)
+    const yr = d.getFullYear()
+    const mo = d.getMonth() + 1
+    const match = salesData.find(s => s._id.year === yr && s._id.month === mo)
+    fullChart.push({
+      year: yr,
+      month: mo,
+      label: `${monthNames[mo]} ${yr}`,
+      totalRevenue: match ? match.totalRevenue : 0,
+      totalSales: match ? match.totalSales : 0
+    })
+  }
+
+  return successResponse(res, { salesChart: fullChart }, 'Sales chart data fetched successfully')
 }
 
 /**
@@ -146,31 +143,28 @@ const getPurchaseChart = async (req, res) => {
         totalPurchases: { $sum: 1 }
       }
     },
-    { $sort: { '_id.year': 1, '_id.month': 1 } },
-    {
-      $project: {
-        _id: 0,
-        year: '$_id.year',
-        month: '$_id.month',
-        totalAmount: 1,
-        totalPurchases: 1,
-        label: {
-          $concat: [
-            {
-              $arrayElemAt: [
-                ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                '$_id.month'
-              ]
-            },
-            ' ',
-            { $toString: '$_id.year' }
-          ]
-        }
-      }
-    }
+    { $sort: { '_id.year': 1, '_id.month': 1 } }
   ])
 
-  return successResponse(res, { purchaseChart: purchaseData }, 'Purchase chart data fetched successfully')
+  // Build full 6-month continuous timeline
+  const monthNames = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const fullChart = []
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date()
+    d.setMonth(d.getMonth() - i)
+    const yr = d.getFullYear()
+    const mo = d.getMonth() + 1
+    const match = purchaseData.find(p => p._id.year === yr && p._id.month === mo)
+    fullChart.push({
+      year: yr,
+      month: mo,
+      label: `${monthNames[mo]} ${yr}`,
+      totalAmount: match ? match.totalAmount : 0,
+      totalPurchases: match ? match.totalPurchases : 0
+    })
+  }
+
+  return successResponse(res, { purchaseChart: fullChart }, 'Purchase chart data fetched successfully')
 }
 
 /**
