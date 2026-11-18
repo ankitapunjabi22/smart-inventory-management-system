@@ -95,8 +95,8 @@ const login = async (req, res) => {
  * @access  Private
  */
 const getMe = async (req, res) => {
-  const user = await User.findById(req.user._id)
-  return successResponse(res, { user }, 'User fetched successfully')
+  const user = await User.findById(req.user._id).select('-password')
+  return successResponse(res, user, 'User fetched successfully')
 }
 
 /**

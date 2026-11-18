@@ -95,11 +95,10 @@ productSchema.virtual('isOutOfStock').get(function () {
 })
 
 // Pre-save: uppercase SKU
-productSchema.pre('save', function (next) {
+productSchema.pre('save', function () {
   if (this.sku) {
     this.sku = this.sku.toUpperCase()
   }
-  next()
 })
 
 module.exports = mongoose.model('Product', productSchema)

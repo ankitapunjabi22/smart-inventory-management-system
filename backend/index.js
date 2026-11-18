@@ -27,12 +27,29 @@ const notificationRoutes = require('./routes/notifications')
 const app = express()
 const httpServer = http.createServer(app)
 
+// CORS configuration supporting dynamic localhost development ports & production
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true)
+    if (
+      /^http:\/\/localhost(:\d+)?$/.test(origin) ||
+      /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin) ||
+      /\.vercel\.app$/.test(origin) ||
+      /\.onrender\.com$/.test(origin) ||
+      origin === process.env.CLIENT_URL
+    ) {
+      return callback(null, true)
+    }
+    return callback(new Error('Blocked by CORS policy'))
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}
+
 // Socket.IO setup
 const io = new Server(httpServer, {
-  cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    methods: ['GET', 'POST']
-  }
+  cors: corsOptions
 })
 
 // Make io available in controllers via req.io
@@ -42,11 +59,8 @@ app.use((req, _res, next) => { req.io = io; next() })
 connectDB()
 
 // Middleware
-app.use(helmet())
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
-  credentials: true
-}))
+app.use(helmet({ crossOriginResourcePolicy: false }))
+app.use(cors(corsOptions))
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

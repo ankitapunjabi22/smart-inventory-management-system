@@ -26,7 +26,7 @@ const getInventoryReport = async (req, res) => {
         as: 'category'
       }
     },
-    { $unwind: { path: '$category', preserveNullAndEmpty: true } },
+    { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
     {
       $lookup: {
         from: 'suppliers',
@@ -35,7 +35,7 @@ const getInventoryReport = async (req, res) => {
         as: 'supplier'
       }
     },
-    { $unwind: { path: '$supplier', preserveNullAndEmpty: true } },
+    { $unwind: { path: '$supplier', preserveNullAndEmptyArrays: true } },
     {
       $addFields: {
         inventoryValue: { $multiply: ['$quantity', '$purchasePrice'] }

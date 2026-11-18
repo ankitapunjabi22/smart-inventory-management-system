@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "jest --testEnvironment=node --detectOpenHandles",
-    "seed": "node utils/seedData.js"
+    "seed": "node utils/seedAllData.js"
   },
   "keywords": [],
   "author": "",

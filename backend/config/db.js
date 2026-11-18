@@ -1,4 +1,12 @@
 const mongoose = require('mongoose')
+const dns = require('dns')
+
+// Configure reliable DNS servers to prevent querySrv ECONNREFUSED on Windows
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4'])
+} catch (e) {
+  // fallback if permissions or environment restricted
+}
 
 const connectDB = async () => {
   if (process.env.NODE_ENV === 'test') {

@@ -194,7 +194,7 @@ const getLowStockProducts = async (req, res) => {
         as: 'category'
       }
     },
-    { $unwind: { path: '$category', preserveNullAndEmpty: true } },
+    { $unwind: { path: '$category', preserveNullAndEmptyArrays: true } },
     { $sort: { quantity: 1 } },
     { $limit: 10 }
   ])

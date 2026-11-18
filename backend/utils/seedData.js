@@ -1,4 +1,9 @@
 require('dotenv').config()
+const dns = require('dns')
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4'])
+} catch (e) {}
+
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 
@@ -23,9 +28,11 @@ const seed = async () => {
 
     let adminUser = await User.findOne({ email: 'admin@inventory.com' })
     if (!adminUser) {
-      const created = await User.insertMany(usersData)
-      adminUser = created[0]
-      console.log('✅ Users seeded')
+      for (const u of usersData) {
+        await User.create(u)
+      }
+      adminUser = await User.findOne({ email: 'admin@inventory.com' })
+      console.log('✅ Users seeded with bcrypt hashed passwords')
     } else {
       console.log('⏭  Users already exist, skipping')
     }
